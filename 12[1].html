@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Recipe Generator</title>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+/* BACKGROUND */
+
+body{
+
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+
+background:
+linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.7)),
+url("https://images.unsplash.com/photo-1556911220-bff31c812dba");
+
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
+
+color:white;
+padding:40px 20px;
+
+transition:background-image 1s ease;
+
+}
+
+/* animated gradient */
+
+body::before{
+
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+
+background:linear-gradient(
+-45deg,
+rgba(255,153,102,0.3),
+rgba(255,94,98,0.3),
+rgba(86,204,242,0.3),
+rgba(47,128,237,0.3)
+);
+
+background-size:400% 400%;
+animation:bgMove 12s ease infinite;
+
+z-index:-1;
+
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+h1{
+font-size:42px;
+margin-bottom:25px;
+text-align:center;
+}
+
+.container{
+
+width:100%;
+max-width:850px;
+padding:35px;
+
+border-radius:20px;
+
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(15px);
+
+box-shadow:0 15px 40px rgba(0,0,0,0.4);
+
+text-align:center;
+
+}
+
+input,select{
+
+width:85%;
+padding:14px;
+margin:10px 0;
+
+border:none;
+border-radius:10px;
+
+font-size:15px;
+
+background:white;
+color:#333;
+
+}
+
+button{
+
+padding:14px 30px;
+
+border:none;
+border-radius:10px;
+
+font-size:16px;
+cursor:pointer;
+
+background:linear-gradient(135deg,#ff9966,#ff5e62);
+
+color:white;
+
+margin-top:10px;
+
+transition:0.3s;
+
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+.food-tag{
+
+display:inline-block;
+
+padding:8px 16px;
+margin:6px;
+
+border-radius:25px;
+
+background:white;
+color:#ff5e62;
+
+cursor:pointer;
+
+}
+
+.recipe-card{
+
+margin-top:30px;
+
+padding:25px;
+
+border-radius:20px;
+
+background:white;
+
+color:#333;
+
+text-align:left;
+
+animation:fadeUp 0.8s ease;
+
+}
+
+.recipe-card img{
+
+width:100%;
+border-radius:15px;
+margin-bottom:15px;
+
+}
+
+@keyframes fadeUp{
+
+from{
+opacity:0;
+transform:translateY(30px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🍳 AI Powered Recipe Generator</h1>
+
+<div class="container">
+
+<input id="ingredients" placeholder="Enter ingredients (tomato, rice, cheese)">
+
+<br>
+
+<select id="diet">
+<option value="normal">No Preference</option>
+<option value="vegan">Vegan</option>
+<option value="glutenfree">Gluten Free</option>
+<option value="keto">Keto</option>
+</select>
+
+<br>
+
+<button onclick="generateRecipe()">Generate Recipe</button>
+
+<h3>🍔 Food Suggestions</h3>
+
+<span class="food-tag" onclick="addIngredient('chicken')">Chicken</span>
+<span class="food-tag" onclick="addIngredient('rice')">Rice</span>
+<span class="food-tag" onclick="addIngredient('cheese')">Cheese</span>
+<span class="food-tag" onclick="addIngredient('tomato')">Tomato</span>
+<span class="food-tag" onclick="addIngredient('potato')">Potato</span>
+
+<h3>🥤 Drink Suggestions</h3>
+
+<span class="food-tag" onclick="addIngredient('milk')">Milk</span>
+<span class="food-tag" onclick="addIngredient('coffee')">Coffee</span>
+<span class="food-tag" onclick="addIngredient('lemon')">Lemon</span>
+<span class="food-tag" onclick="addIngredient('mango')">Mango</span>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+/* add ingredient */
+
+function addIngredient(item){
+let input=document.getElementById("ingredients");
+input.value += (input.value ? ", " : "") + item;
+}
+
+/* recipes */
+
+const recipes=[
+
+{
+name:"Chicken Biryani",
+trigger:["chicken","rice"],
+image:"https://images.unsplash.com/photo-1604908176997-431a1f3b6d7b",
+video:"https://www.youtube.com/embed/95BCU1n268w",
+cuisine:"Indian",
+time:"45 minutes",
+rating:"⭐ 4.8/5",
+
+ingredients:{
+rice:1,
+chicken:200,
+oil:1,
+spices:1
+},
+
+nutrition:{
+calories:"450 kcal",
+protein:"28g",
+carbs:"40g",
+fat:"12g"
+},
+
+tips:[
+"Use basmati rice",
+"Add fried onions",
+"Cook slowly for best taste"
+],
+
+steps:[
+"Wash and soak rice",
+"Cook chicken with spices",
+"Add rice and water",
+"Cook until rice becomes soft"
+]
+
+},
+
+{
+name:"Tomato Pasta",
+trigger:["tomato"],
+image:"https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5",
+video:"https://www.youtube.com/embed/1-SJGQ2HLp8",
+cuisine:"Italian",
+time:"20 minutes",
+rating:"⭐ 4.5/5",
+
+ingredients:{
+pasta:150,
+tomato:2,
+oliveOil:1,
+garlic:2
+},
+
+nutrition:{
+calories:"320 kcal",
+protein:"9g",
+carbs:"55g",
+fat:"8g"
+},
+
+tips:[
+"Don't overcook pasta",
+"Add basil leaves",
+"Use olive oil"
+],
+
+steps:[
+"Boil pasta",
+"Cook tomato sauce",
+"Add garlic",
+"Mix pasta with sauce"
+]
+
+}
+
+];
+
+/* kitchen backgrounds */
+
+const kitchenBackgrounds=[
+
+"https://images.unsplash.com/photo-1556911220-bff31c812dba",
+"https://images.unsplash.com/photo-1506368083636-6defb67639a7",
+"https://images.unsplash.com/photo-1556912173-3bb406ef7e77",
+"https://images.unsplash.com/photo-1556910103-1c02745aae4d"
+
+];
+
+/* unsafe combos */
+
+const unsafeFoodCombos=[
+["milk","lemon"],
+["fish","milk"]
+];
+
+function checkSafety(ingredients){
+
+for(let combo of unsafeFoodCombos){
+
+if(ingredients.includes(combo[0]) && ingredients.includes(combo[1])){
+return "⚠ Warning: These ingredients may cause digestion issues.";
+}
+
+}
+
+return "✅ Ingredients appear safe.";
+
+}
+
+/* voice guide */
+
+function speakRecipe(text){
+
+let speech=new SpeechSynthesisUtterance(text);
+
+speech.rate=1;
+speech.pitch=1;
+
+speechSynthesis.speak(speech);
+
+}
+
+/* generator */
+
+function generateRecipe(){
+
+let userIngredients=document.getElementById("ingredients").value.toLowerCase();
+
+let people=parseInt(prompt("👨‍👩‍👧 How many people will eat this meal?"));
+
+if(!people||people<1) people=1;
+
+let selectedRecipe=null;
+
+recipes.forEach(recipe=>{
+
+recipe.trigger.forEach(word=>{
+
+if(userIngredients.includes(word)){
+selectedRecipe=recipe;
+}
+
+});
+
+});
+
+/* default */
+
+if(!selectedRecipe){
+
+selectedRecipe={
+name:"Healthy Salad",
+image:"https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
+video:"",
+cuisine:"Global",
+time:"10 minutes",
+rating:"⭐ 4.2/5",
+ingredients:{vegetables:1,oliveOil:1,lemon:1},
+nutrition:{calories:"200 kcal",protein:"5g",carbs:"15g",fat:"8g"},
+tips:["Use fresh vegetables"],
+steps:["Chop vegetables","Mix ingredients","Serve fresh"]
+};
+
+}
+
+/* change background */
+
+let randomKitchen=kitchenBackgrounds[Math.floor(Math.random()*kitchenBackgrounds.length)];
+
+document.body.style.backgroundImage=
+`linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.7)),url(${randomKitchen})`;
+
+/* ingredients */
+
+let ingredientList="";
+
+Object.entries(selectedRecipe.ingredients).forEach(([key,val])=>{
+ingredientList+=`<li>${key} : ${val*people}</li>`;
+});
+
+/* steps */
+
+let stepsHTML="";
+
+selectedRecipe.steps.forEach((s,i)=>{
+stepsHTML+=`${i+1}. ${s}<br>`;
+});
+
+/* tips */
+
+let tipsHTML="";
+
+selectedRecipe.tips.forEach(t=>{
+tipsHTML+=`• ${t}<br>`;
+});
+
+/* nutrition */
+
+let nutritionHTML=`
+Calories: ${selectedRecipe.nutrition.calories}<br>
+Protein: ${selectedRecipe.nutrition.protein}<br>
+Carbs: ${selectedRecipe.nutrition.carbs}<br>
+Fat: ${selectedRecipe.nutrition.fat}
+`;
+
+/* safety */
+
+let safety=checkSafety(userIngredients);
+
+/* result */
+
+let html=`
+
+<h2>${selectedRecipe.name}</h2>
+
+<img src="${selectedRecipe.image}">
+
+<p><b>🌍 Cuisine:</b> ${selectedRecipe.cuisine}</p>
+<p><b>⏱ Time:</b> ${selectedRecipe.time}</p>
+<p><b>⭐ Rating:</b> ${selectedRecipe.rating}</p>
+<p><b>👨‍👩‍👧 Serving:</b> ${people}</p>
+
+<h3>🍲 Ingredients</h3>
+<ul>${ingredientList}</ul>
+
+<h3>🍳 Steps</h3>
+${stepsHTML}
+
+<h3>🧂 Tips</h3>
+${tipsHTML}
+
+<h3>🥗 Nutrition</h3>
+${nutritionHTML}
+
+<h3>🧠 AI Food Analysis</h3>
+${safety}
+
+<h3>🎥 Video</h3>
+
+<iframe width="100%" height="300"
+src="${selectedRecipe.video}"
+frameborder="0"
+allowfullscreen></iframe>
+
+<button onclick="speakRecipe('I will guide you to cook ${selectedRecipe.name}. ${selectedRecipe.steps.join(". ")}')">
+🔊 AI Cooking Guide
+</button>
+
+`;
+
+document.getElementById("result").innerHTML=
+`<div class="recipe-card">${html}</div>`;
+
+}
+
+</script>
+
+</body>
+</html>
